@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/gradient_state">
+        <ripple xmlns:android="http://schemas.android.com/apk/res/android"
+            android:color="?attr/colorControlHighlight">
+
+            <item>
+                <shape android:shape="rectangle">
+                    <gradient
+                        android:angle="0"
+                        android:startColor="#4C66C2"
+                        android:centerColor="#48D1CC"
+                        android:endColor="#9370DB"
+                        android:type="linear" />
+                    <corners android:radius="17dp" />
+                </shape>
+            </item>
+        </ripple>
+    </item>
+</animated-selector>

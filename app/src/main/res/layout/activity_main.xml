@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activities.MainActivity"
+    android:background="?attr/layoutBackgroundColor">
+
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/InstructionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6"
+        android:paddingLeft="@dimen/_3sdp"
+        android:paddingRight="@dimen/_3sdp"
+        android:paddingTop="@dimen/_5sdp"
+        android:text="@string/perm_inst_1"
+        android:textStyle="italic"
+        android:textSize="12sp"
+        android:textColor="@color/BlackAndWhite"
+        android:fontFamily="sans-serif-light"/>
+
+    <LinearLayout
+        android:id="@+id/layoutPermission1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/layout_rounded_background"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="@dimen/_15ssp"
+            android:textStyle="bold"
+            android:text="@string/apply_display"
+            android:textColor="@color/text_approve_allow_layout"
+            android:fontFamily="sans-serif-condensed-light"/>
+
+        <com.kyleduo.switchbutton.SwitchButton
+            android:id="@+id/fancySwitchForDisplayIcon"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:checked="true"
+            android:contentDescription="@string/apply_display"
+            android:tooltipText="@string/apply_display" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/InstructionTextView2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        android:text="@string/perm_inst_2"
+        android:textStyle="italic"
+        android:paddingLeft="@dimen/_3sdp"
+        android:paddingRight="@dimen/_3sdp"
+        android:paddingTop="@dimen/_3sdp"
+        android:textColor="@color/BlackAndWhite"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-light"/>
+
+
+
+    <LinearLayout
+        android:id="@+id/layoutPermission2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/layout_rounded_background"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="@dimen/_15ssp"
+            android:textStyle="bold"
+            android:text="@string/allowDOOA"
+            android:textColor="@color/text_approve_allow_layout"
+            android:fontFamily="sans-serif-condensed-light"/>
+        <com.kyleduo.switchbutton.SwitchButton
+            android:id="@+id/fancySwitchForDisplayIcon2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:checked="true"
+            android:contentDescription="@string/allowDOOA"
+            android:tooltipText="@string/allowDOOA"/>
+
+    </LinearLayout>
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:layout_marginTop="2dp"/>
+
+    <LinearLayout
+        android:background="#00FFEB3B"
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="vertical"/>
+
+
+
+
+
+
+
+
+</LinearLayout>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Fake Lock</string>
+    <string name="desc_settings">Open Settings</string>
+    <string name="perm_inst_1">One the toggle and enjoy a demo lock screen vibes!</string>
+    <string name="perm_inst_2">Go to settings and allow display over others app otherwise can not enjoy the feature.</string>
+    <string name="apply_display">Apply Display System Button</string>
+    <string name="allowDOOA">Allow Display Over Others App</string>
+
+
+</resources>

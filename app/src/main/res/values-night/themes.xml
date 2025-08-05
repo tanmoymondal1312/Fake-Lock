@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme_ScreenOff" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="layoutBackgroundColor">@color/layoutBgColor</item>
+    </style>
+
+
+
+
+
+
+
+
+
+</resources>
+

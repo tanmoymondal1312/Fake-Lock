@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="BlackAndWhite">#000000</color>
+    <color name="statusBarColor">#FFFFFF</color>
+    <color name="layoutBgColor">#ECEDEE</color>
+    <color name="splash_bg">#272626</color>
+    <color name="permissionLay">#1EB587C7</color>
+    <color name="layoutBorderColor">#8F99E2</color>
+    <color name="switch_off">#909294</color>
+    <color name="switch_on">#98F5E5</color>
+    <color name="text_approve_allow_layout">#232C25</color>
+    <color name="full_transparent">#00FFFFFF</color>
+    <color name="thumb_off_color">#DDD1D1</color>
+    <color name="thumb_on_color">#A1ADFA</color>
+
+
+
+
+
+
+
+
+
+</resources>

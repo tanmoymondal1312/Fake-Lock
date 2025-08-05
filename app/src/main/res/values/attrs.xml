@@ -1,0 +1,3 @@
+<resources>
+    <attr name="layoutBackgroundColor" format="color" />
+</resources>

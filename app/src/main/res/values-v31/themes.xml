@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Background color -->
+        <item name="windowSplashScreenBackground">@color/splash_bg</item>
+
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_layer</item>
+
+
+        <!-- Your custom branding logo below default icon -->
+        <item name="android:windowSplashScreenBrandingImage">@drawable/splash_branding_logo</item>
+
+        <!-- Theme after splash -->
+        <item name="postSplashScreenTheme">@style/Theme_ScreenOff</item>
+    </style>
+</resources>
