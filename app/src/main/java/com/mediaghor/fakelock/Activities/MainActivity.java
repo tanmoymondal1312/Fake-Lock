@@ -1,21 +1,33 @@
 package com.mediaghor.fakelock.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.kyleduo.switchbutton.SwitchButton;
+import com.mediaghor.fakelock.Dialog.PermissionDialog;
+import com.mediaghor.fakelock.Permissions.NotificationPermissionManager;
+import com.mediaghor.fakelock.Permissions.OverlayPermissionUtils;
+import com.mediaghor.fakelock.Permissions.PermissionUtils;
 import com.mediaghor.fakelock.R;
 import com.mediaghor.fakelock.adapter.SliderAdapter;
 
@@ -26,6 +38,11 @@ public class MainActivity extends AppCompatActivity{
 
     private SwitchButton fancySwitchForDisplayIcon, fancySwitchForDisplayIcon2;
     ViewPager2 viewPager2;
+    private PermissionDialog dialog;
+    private NotificationPermissionManager permissionManager;
+    private static final int MAX_DENIALS_BEFORE_RATIONALE = 2;
+    private static final String PERMISSION_PREFS = "PermissionPrefs";
+    private static final String NOTIFICATION_DENIAL_COUNT_KEY = "notification_denial_count";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,64 +50,23 @@ public class MainActivity extends AppCompatActivity{
         setTheme(R.style.Theme_ScreenOff);
         setContentView(R.layout.activity_main);
 
+
+
         // Initialize views
         initializeViews();
 
-        // In your MainActivity's onCreate:
-        viewPager2 = findViewById(R.id.viewPager);
 
-// Calculate dimensions for showing 3 items (1 full + 2 partial)
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int screenWidth = displayMetrics.widthPixels;
-        int itemWidth = (int) (screenWidth * 0.60f); // Each item takes 75% of screen width
-        int peekWidth = (screenWidth - itemWidth) / 2; // Space for partial items
+        setupLayoutSelectorViewpager();
 
-// Set padding to show partial items on both sides
-        viewPager2.setPadding(peekWidth, 0, peekWidth, 0);
-        viewPager2.setClipToPadding(false);
-        viewPager2.setClipChildren(false);
-        viewPager2.setOffscreenPageLimit(2); // Keep 2 pages in memory on each side
 
-        List<Integer> imageList = Arrays.asList(
-                R.drawable.lock_sample1,
-                R.drawable.lock_sample1,
-                R.drawable.lock_sample1,
-                R.drawable.lock_sample1
-        );
 
-        SliderAdapter adapter = new SliderAdapter(imageList);
-        viewPager2.setAdapter(adapter);
 
-// Create composite transformer for combined effects
-        CompositePageTransformer compositeTransformer = new CompositePageTransformer();
-        compositeTransformer.addTransformer(new MarginPageTransformer(8)); // Small margin between items
-        compositeTransformer.addTransformer(new ViewPager2.PageTransformer() {
-            private static final float MIN_SCALE = 0.8f;
-            private static final float MIN_ALPHA = 0.5f;
 
-            @Override
-            public void transformPage(@NonNull View page, float position) {
-                if (Math.abs(position) > 1) {
-                    page.setAlpha(0f);
-                    return;
-                }
 
-                // Scale effect
-                float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position) / 2);
-                page.setScaleX(scaleFactor);
-                page.setScaleY(scaleFactor);
 
-                // Alpha effect
-                float alphaFactor = Math.max(MIN_ALPHA, 1 - Math.abs(position));
-                page.setAlpha(alphaFactor);
 
-                // Translation effect to bring items closer
-                page.setTranslationX(-position * peekWidth / 2);
-            }
-        });
 
-        viewPager2.setPageTransformer(compositeTransformer);
+
 
 
     }
@@ -100,6 +76,23 @@ public class MainActivity extends AppCompatActivity{
     private void initializeViews() {
         fancySwitchForDisplayIcon = findViewById(R.id.fancySwitchForDisplayIcon);
         fancySwitchForDisplayIcon2 = findViewById(R.id.fancySwitchForDisplayIcon2);
+
+        fancySwitchForDisplayIcon.setChecked(false);
+        fancySwitchForDisplayIcon2.setChecked(false);
+
+
+        fancySwitchForDisplayIcon2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    permissionHandler();
+                    // Perform action when turned ON
+                } else {
+                    Log.d("Switch2", "Switch 2 is OFF");
+                    // Perform action when turned OFF
+                }
+            }
+        });
 
 
 
@@ -136,4 +129,222 @@ public class MainActivity extends AppCompatActivity{
 
 
     }
+
+
+    private void setupLayoutSelectorViewpager(){
+        viewPager2 = findViewById(R.id.viewPager);
+
+        // Calculate dimensions for showing 3 items (1 full + 2 partial)
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        int itemWidth = (int) (screenWidth * 0.60f); // Each item takes 75% of screen width
+        int peekWidth = (screenWidth - itemWidth) / 2; // Space for partial items
+
+        // Set padding to show partial items on both sides
+        viewPager2.setPadding(peekWidth, 0, peekWidth, 0);
+        viewPager2.setClipToPadding(false);
+        viewPager2.setClipChildren(false);
+        viewPager2.setOffscreenPageLimit(2); // Keep 2 pages in memory on each side
+
+        List<Integer> imageList = Arrays.asList(
+                R.drawable.lock_sample1,
+                R.drawable.lock_sample1,
+                R.drawable.lock_sample1,
+                R.drawable.lock_sample1
+        );
+
+        SliderAdapter adapter = new SliderAdapter(imageList);
+        viewPager2.setAdapter(adapter);
+
+        // Create composite transformer for combined effects
+        CompositePageTransformer compositeTransformer = new CompositePageTransformer();
+        compositeTransformer.addTransformer(new MarginPageTransformer(8)); // Small margin between items
+        compositeTransformer.addTransformer(new ViewPager2.PageTransformer() {
+            private static final float MIN_SCALE = 0.8f;
+            private static final float MIN_ALPHA = 0.5f;
+
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                if (Math.abs(position) > 1) {
+                    page.setAlpha(0f);
+                    return;
+                }
+
+                // Scale effect
+                float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position) / 2);
+                page.setScaleX(scaleFactor);
+                page.setScaleY(scaleFactor);
+
+                // Alpha effect
+                float alphaFactor = Math.max(MIN_ALPHA, 1 - Math.abs(position));
+                page.setAlpha(alphaFactor);
+
+                // Translation effect to bring items closer
+                page.setTranslationX(-position * peekWidth / 2);
+            }
+        });
+
+        viewPager2.setPageTransformer(compositeTransformer);
+
+    }
+
+
+
+
+
+    private void permissionHandler() {
+
+
+        dialog = new PermissionDialog(this, new PermissionDialog.PermissionDialogListener() {
+            @Override
+            public void onNotificationAllowed() {
+                initializePermissionManager();
+                permissionManager.checkOrRequestPermission(MainActivity.this);
+            }
+
+            @Override
+            public void onDisplayAllowed() {
+                // Handle display permission if needed
+            }
+
+            @Override
+            public void onDialogClosed() {
+                // Optional: Track when user closes dialog without taking action
+                trackPermissionDialogClosed();
+            }
+        });
+
+
+        dialog.show();
+        if (permissionChecker("notification")) {
+            updateUIForGrantedPermission();
+        }
+    }
+
+    private void initializePermissionManager() {
+        if (permissionManager == null) {
+            permissionManager = new NotificationPermissionManager.Builder(this)
+                    .setCallback(new NotificationPermissionManager.PermissionCallback() {
+                        @Override
+                        public void onPermissionGranted() {
+                            resetDenialCount();
+                            updateUIForGrantedPermission();
+                        }
+
+                        @Override
+                        public void onPermissionDenied(boolean shouldShowRationale) {
+                            handlePermissionDenial(shouldShowRationale);
+                        }
+
+                        @Override
+                        public void onPermissionPermanentlyDenied() {
+                            handlePermanentDenial();
+                        }
+                    })
+                    .build();
+        }
+    }
+
+    private void updateUIForGrantedPermission() {
+        runOnUiThread(() -> {
+            if (dialog != null) {
+                dialog.handleButtonBehaviour("notification_allowed");
+            }
+            showToast("Notifications enabled");
+            // Additional UI updates if needed
+        });
+    }
+
+    private void handlePermissionDenial(boolean shouldShowRationale) {
+        incrementDenialCount();
+        runOnUiThread(() -> {
+            if (shouldShowRationale && getDenialCount() >= MAX_DENIALS_BEFORE_RATIONALE) {
+                showRationaleDialog();
+            } else {
+                showToast("Please enable notifications for full functionality");
+            }
+        });
+    }
+
+    private void handlePermanentDenial() {
+        runOnUiThread(() -> {
+            showSettingsRedirectDialog();
+        });
+    }
+
+    private void showRationaleDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Notifications Needed")
+                .setMessage("We need notification permissions to alert you about important updates. This feature won't work without this permission.")
+                .setPositiveButton("Try Again", (d, w) -> permissionManager.checkOrRequestPermission(MainActivity.this))
+                .setNegativeButton("Not Now", null)
+                .show();
+    }
+
+    private void showSettingsRedirectDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Permission Required")
+                .setMessage("You've permanently denied notifications. Please enable them in app settings.")
+                .setPositiveButton("Open Settings", (d, w) -> openAppSettings())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void openAppSettings() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivity(intent);
+    }
+
+    private void incrementDenialCount() {
+        SharedPreferences prefs = getSharedPreferences(PERMISSION_PREFS, MODE_PRIVATE);
+        int currentCount = prefs.getInt(NOTIFICATION_DENIAL_COUNT_KEY, 0);
+        prefs.edit().putInt(NOTIFICATION_DENIAL_COUNT_KEY, currentCount + 1).apply();
+    }
+
+    private int getDenialCount() {
+        return getSharedPreferences(PERMISSION_PREFS, MODE_PRIVATE)
+                .getInt(NOTIFICATION_DENIAL_COUNT_KEY, 0);
+    }
+
+    private void resetDenialCount() {
+        getSharedPreferences(PERMISSION_PREFS, MODE_PRIVATE)
+                .edit()
+                .remove(NOTIFICATION_DENIAL_COUNT_KEY)
+                .apply();
+    }
+
+    public boolean permissionChecker(String permissionName) {
+        if ("notification".equals(permissionName)) {
+            return PermissionUtils.hasNotificationPermission(this);
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (permissionManager != null) {
+            permissionManager.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+        }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void trackPermissionDialogClosed() {
+        // Analytics or tracking if needed
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == OverlayPermissionUtils.REQUEST_CODE_OVERLAY) {
+            OverlayPermissionUtils.handleOverlayPermissionResult(this);
+        }
+    }
+
 }

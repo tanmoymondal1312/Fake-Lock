@@ -12,6 +12,12 @@
     <color name="full_transparent">#00FFFFFF</color>
     <color name="thumb_off_color">#DDD1D1</color>
     <color name="thumb_on_color">#A1ADFA</color>
+    <color name="blur_background_color">#D61414</color>
+    <color name="dialogBgColor">#FFFFFF</color>
+    <color name="un_clickable_green">#606464</color>
+
+
+
 
 
 

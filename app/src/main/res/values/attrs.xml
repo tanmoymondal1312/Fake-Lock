@@ -1,3 +1,5 @@
 <resources>
     <attr name="layoutBackgroundColor" format="color" />
+    <attr name="dialogBackgroundColor" format="color" />
+
 </resources>

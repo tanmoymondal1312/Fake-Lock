@@ -1,6 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme_ScreenOff" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="layoutBackgroundColor">@color/layoutBgColor</item>
+        <item name="dialogBackgroundColor">@color/dialogBgColor</item>
+
+    </style>
+
+
+    <style name="FullWidthDialogTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
     </style>
 
 

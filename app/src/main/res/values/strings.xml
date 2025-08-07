@@ -2,9 +2,10 @@
     <string name="app_name">Fake Lock</string>
     <string name="desc_settings">Open Settings</string>
     <string name="perm_inst_1">One the toggle and enjoy a demo lock screen vibes!</string>
-    <string name="perm_inst_2">Go to settings and allow display over others app otherwise can not enjoy the feature.</string>
+    <string name="perm_inst_2">Go to settings and allow necessary settings otherwise can not enjoy the feature.</string>
     <string name="apply_display">Apply Display System Button</string>
-    <string name="allowDOOA">Allow Display Over Others App</string>
-
+    <string name="allowDOOA">Allow All Required Permissions</string>
+    <string name="display_set_des">To show the fake lock screen effectively, allow "Display Over Other Apps" so it can appear above all running applications.</string>
+    <string name="notification_des">To receive important updates, please allow notification access. This helps us keep you informed with alerts, tips, and relevant messages.</string>
 
 </resources>
