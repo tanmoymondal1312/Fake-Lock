@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 
 import androidx.core.content.ContextCompat;
 
+import com.mediaghor.fakelock.Activities.MainActivity;
 import com.mediaghor.fakelock.R;
 
 public class PermissionDialog extends Dialog {
@@ -73,10 +74,24 @@ public class PermissionDialog extends Dialog {
     }
 
     public void handleButtonBehaviour(String state) {
-        if (state.equals("notification_allowed")) {  // Also fixed string comparison
+        if (state.equals("notification_allowed")) {
             allowNotificationBtn.setText("Allowed ✅");
             allowNotificationBtn.setEnabled(false);
             allowNotificationBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.un_clickable_green));
+
+            if (activity instanceof MainActivity) {
+                ((MainActivity) activity).showToast("Notification permission granted!");
+            }
+
+        } else if (state.equals("display_allowed")) {
+            allowDisplayBtn.setText("Allowed ✅");
+            allowDisplayBtn.setEnabled(false);
+            allowDisplayBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.un_clickable_green));
+
+            if (activity instanceof MainActivity) {
+                ((MainActivity) activity).showToast("Display over apps permission granted!");
+            }
         }
     }
+
 }

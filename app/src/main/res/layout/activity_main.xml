@@ -99,7 +99,7 @@
             android:textColor="@color/text_approve_allow_layout"
             android:fontFamily="sans-serif-condensed-light"/>
         <com.kyleduo.switchbutton.SwitchButton
-            android:id="@+id/fancySwitchForDisplayIcon2"
+            android:id="@+id/fancySwitchForPermissions"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"

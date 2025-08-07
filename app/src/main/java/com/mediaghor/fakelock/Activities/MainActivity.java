@@ -2,7 +2,6 @@ package com.mediaghor.fakelock.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
@@ -24,9 +23,9 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.kyleduo.switchbutton.SwitchButton;
+import com.mediaghor.fakelock.Dialog.OverlayPermissionHelper;
 import com.mediaghor.fakelock.Dialog.PermissionDialog;
 import com.mediaghor.fakelock.Permissions.NotificationPermissionManager;
-import com.mediaghor.fakelock.Permissions.OverlayPermissionUtils;
 import com.mediaghor.fakelock.Permissions.PermissionUtils;
 import com.mediaghor.fakelock.R;
 import com.mediaghor.fakelock.adapter.SliderAdapter;
@@ -36,7 +35,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
 
-    private SwitchButton fancySwitchForDisplayIcon, fancySwitchForDisplayIcon2;
+    private SwitchButton fancySwitchForDisplayIcon, fancySwitchForPermissions;
     ViewPager2 viewPager2;
     private PermissionDialog dialog;
     private NotificationPermissionManager permissionManager;
@@ -58,9 +57,7 @@ public class MainActivity extends AppCompatActivity{
 
         setupLayoutSelectorViewpager();
 
-
-
-
+        handleToggle();
 
 
 
@@ -75,13 +72,13 @@ public class MainActivity extends AppCompatActivity{
 
     private void initializeViews() {
         fancySwitchForDisplayIcon = findViewById(R.id.fancySwitchForDisplayIcon);
-        fancySwitchForDisplayIcon2 = findViewById(R.id.fancySwitchForDisplayIcon2);
+        fancySwitchForPermissions = findViewById(R.id.fancySwitchForPermissions);
 
-        fancySwitchForDisplayIcon.setChecked(false);
-        fancySwitchForDisplayIcon2.setChecked(false);
+//        fancySwitchForDisplayIcon.setChecked(false);
+//        fancySwitchForDisplayIcon2.setChecked(false);
 
 
-        fancySwitchForDisplayIcon2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        fancySwitchForPermissions.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -111,7 +108,7 @@ public class MainActivity extends AppCompatActivity{
                 }
         );
         fancySwitchForDisplayIcon.setBackColor(backColorStateList);
-        fancySwitchForDisplayIcon2.setBackColor(backColorStateList);
+        fancySwitchForPermissions.setBackColor(backColorStateList);
 
         ColorStateList thumbColorStateList = new ColorStateList(
                 new int[][] {
@@ -125,7 +122,7 @@ public class MainActivity extends AppCompatActivity{
                 }
         );
         fancySwitchForDisplayIcon.setThumbColor(thumbColorStateList);
-        fancySwitchForDisplayIcon2.setThumbColor(thumbColorStateList);
+        fancySwitchForPermissions.setThumbColor(thumbColorStateList);
 
 
     }
@@ -206,6 +203,18 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onDisplayAllowed() {
                 // Handle display permission if needed
+                OverlayPermissionHelper.requestPermission(MainActivity.this, new OverlayPermissionHelper.PermissionCallback() {
+                    @Override
+                    public void onPermissionGranted() {
+                        updateUIForGrantedPermission("display_allowed");
+                        // Start your overlay service or functionality
+                    }
+
+                    @Override
+                    public void onPermissionDenied() {
+                        Toast.makeText(MainActivity.this, "Functionality limited without permission", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
@@ -218,7 +227,10 @@ public class MainActivity extends AppCompatActivity{
 
         dialog.show();
         if (permissionChecker("notification")) {
-            updateUIForGrantedPermission();
+            updateUIForGrantedPermission("notification_allowed");
+        }
+        if (permissionChecker("display_over")) {
+            updateUIForGrantedPermission("display_allowed");
         }
     }
 
@@ -229,7 +241,7 @@ public class MainActivity extends AppCompatActivity{
                         @Override
                         public void onPermissionGranted() {
                             resetDenialCount();
-                            updateUIForGrantedPermission();
+                            updateUIForGrantedPermission("notification_allowed");
                         }
 
                         @Override
@@ -246,12 +258,12 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    private void updateUIForGrantedPermission() {
+    private void updateUIForGrantedPermission(String state) {
         runOnUiThread(() -> {
             if (dialog != null) {
-                dialog.handleButtonBehaviour("notification_allowed");
+                dialog.handleButtonBehaviour(state);
             }
-            showToast("Notifications enabled");
+//            showToast("Notifications enabled");
             // Additional UI updates if needed
         });
     }
@@ -319,9 +331,17 @@ public class MainActivity extends AppCompatActivity{
     public boolean permissionChecker(String permissionName) {
         if ("notification".equals(permissionName)) {
             return PermissionUtils.hasNotificationPermission(this);
+        } else if ("display_over".equals(permissionName)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return Settings.canDrawOverlays(this);
+            } else {
+                // On versions below Android 6.0, the permission is automatically granted
+                return true;
+            }
         }
         return false;
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -331,20 +351,41 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    private void showToast(String message) {
+    public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void trackPermissionDialogClosed() {
         // Analytics or tracking if needed
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        handleToggle();
 
-        if (requestCode == OverlayPermissionUtils.REQUEST_CODE_OVERLAY) {
-            OverlayPermissionUtils.handleOverlayPermissionResult(this);
-        }
     }
+
+
+    private void handleToggle(){
+        if (permissionChecker("notification") && permissionChecker("display_over")) {
+            fancySwitchForPermissions.setChecked(true);
+        }else {
+            fancySwitchForPermissions.setChecked(false);
+        }
+
+    }
+
+
+
+    // In onActivityResult
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1002){
+            runOnUiThread(() -> {
+                updateUIForGrantedPermission("display_allowed");
+                handleToggle();
+            });
+        }
+
+
+    }
+
 
 }
