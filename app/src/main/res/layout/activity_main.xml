@@ -36,6 +36,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@drawable/layout_rounded_background"
+        android:foreground="?attr/selectableItemBackground"
         android:orientation="horizontal">
 
         <TextView
@@ -84,7 +85,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:clickable="true"
         android:background="@drawable/layout_rounded_background"
+        android:foreground="?attr/selectableItemBackground"
         android:orientation="horizontal">
 
         <TextView

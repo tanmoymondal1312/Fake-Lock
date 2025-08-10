@@ -1,16 +1,25 @@
 package com.mediaghor.fakelock.Activities;
 
+import static java.security.AccessController.getContext;
+
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +44,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
 
+    LinearLayout layoutDisplayIcon,layoutPermission;
     private SwitchButton fancySwitchForDisplayIcon, fancySwitchForPermissions;
     ViewPager2 viewPager2;
     private PermissionDialog dialog;
@@ -43,6 +53,7 @@ public class MainActivity extends AppCompatActivity{
     private static final String PERMISSION_PREFS = "PermissionPrefs";
     private static final String NOTIFICATION_DENIAL_COUNT_KEY = "notification_denial_count";
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,23 +70,39 @@ public class MainActivity extends AppCompatActivity{
 
         handleToggle();
 
-
-
-
-
-
-
-
+        if (!handleToggle()) {
+            layoutPermission.postDelayed(() -> {
+                long now = SystemClock.uptimeMillis();
+                MotionEvent downEvent = MotionEvent.obtain(
+                        now, now,
+                        MotionEvent.ACTION_DOWN,
+                        layoutPermission.getWidth() / 2f,
+                        layoutPermission.getHeight() / 2f,
+                        0
+                );
+                MotionEvent upEvent = MotionEvent.obtain(
+                        now + 100, now + 100,
+                        MotionEvent.ACTION_UP,
+                        layoutPermission.getWidth() / 2f,
+                        layoutPermission.getHeight() / 2f,
+                        0
+                );
+                layoutPermission.dispatchTouchEvent(downEvent);
+                layoutPermission.dispatchTouchEvent(upEvent);
+                downEvent.recycle();
+                upEvent.recycle();
+            }, 1500);  //
+        }
     }
 
 
 
     private void initializeViews() {
+        layoutPermission = findViewById(R.id.layoutPermission2);
+        layoutDisplayIcon = findViewById(R.id.layoutPermission1);
         fancySwitchForDisplayIcon = findViewById(R.id.fancySwitchForDisplayIcon);
         fancySwitchForPermissions = findViewById(R.id.fancySwitchForPermissions);
 
-//        fancySwitchForDisplayIcon.setChecked(false);
-//        fancySwitchForDisplayIcon2.setChecked(false);
 
 
         fancySwitchForPermissions.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -83,10 +110,15 @@ public class MainActivity extends AppCompatActivity{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     permissionHandler();
+
+                    enableDisableADSB("enable");
+
                     // Perform action when turned ON
                 } else {
-                    Log.d("Switch2", "Switch 2 is OFF");
-                    // Perform action when turned OFF
+
+                    enableDisableADSB("disable");
+
+
                 }
             }
         });
@@ -263,8 +295,6 @@ public class MainActivity extends AppCompatActivity{
             if (dialog != null) {
                 dialog.handleButtonBehaviour(state);
             }
-//            showToast("Notifications enabled");
-            // Additional UI updates if needed
         });
     }
 
@@ -358,17 +388,58 @@ public class MainActivity extends AppCompatActivity{
     private void trackPermissionDialogClosed() {
         // Analytics or tracking if needed
         handleToggle();
+        if(handleToggle()){
+            enableDisableADSB("enable");
+        }
+
 
     }
 
 
-    private void handleToggle(){
+    public boolean handleToggle(){
         if (permissionChecker("notification") && permissionChecker("display_over")) {
             fancySwitchForPermissions.setChecked(true);
+
+            return true;
         }else {
             fancySwitchForPermissions.setChecked(false);
+            return false;
         }
 
+    }
+
+
+    private void LogMessage(String tag, String message){
+        Log.d(tag,message);
+    }
+
+
+
+    private void enableDisableADSB(String state){
+        if (state.equals("enable")){
+            layoutDisplayIcon.setForeground(null);
+            layoutPermission.setForeground(null);
+            fancySwitchForDisplayIcon.setEnabled(true);
+            fancySwitchForDisplayIcon.setClickable(true);
+
+
+        } else if (state.equals("disable")) {
+
+            fancySwitchForDisplayIcon.setChecked(false);
+            fancySwitchForDisplayIcon.setEnabled(false);
+            layoutDisplayIcon.setForeground(
+                    new ColorDrawable(ContextCompat.getColor(MainActivity.this, R.color.disable_layout_foreground))
+            );
+            TypedValue typedValue = new TypedValue();
+            getTheme().resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true);
+            Drawable selectableDrawable = ContextCompat.getDrawable(this, typedValue.resourceId);
+            layoutPermission.setForeground(selectableDrawable);
+
+
+
+        }else {
+            showToast("Undefined State 'enableDisableADSB() ");
+        }
     }
 
 
@@ -377,15 +448,37 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        LogMessage("dialog debug","Activity Result Called");
         if(requestCode == 1002){
             runOnUiThread(() -> {
+                LogMessage("dialog debug","Request Code 100");
+
                 updateUIForGrantedPermission("display_allowed");
-                handleToggle();
+
+                if(dialog== null){
+                    LogMessage("dialog debug","Dialog Null");
+
+                    permissionHandler();
+                }
             });
         }
-
-
     }
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -69,7 +69,7 @@ public class OverlayPermissionHelper {
         new AlertDialog.Builder(activity)
                 .setTitle("Permission Needed")
                 .setMessage("This feature needs to display over other apps. Please enable the permission and return to the app.")
-                .setPositiveButton("Continue", (d, w) -> onContinue.run())
+                .setPositiveButton("Open Settings", (d, w) -> onContinue.run())
                 .setNegativeButton("Cancel", (d, w) -> {
                     if (callback != null) callback.onPermissionDenied();
                 })

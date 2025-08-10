@@ -15,6 +15,7 @@
     <color name="blur_background_color">#D61414</color>
     <color name="dialogBgColor">#FFFFFF</color>
     <color name="un_clickable_green">#606464</color>
+    <color name="disable_layout_foreground">#805F5959</color>
 
 
 
