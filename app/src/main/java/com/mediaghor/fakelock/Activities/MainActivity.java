@@ -34,6 +34,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.mediaghor.fakelock.Dialog.OverlayPermissionHelper;
 import com.mediaghor.fakelock.Dialog.PermissionDialog;
+import com.mediaghor.fakelock.OverlaySystem.FloatingIconManager;
 import com.mediaghor.fakelock.Permissions.NotificationPermissionManager;
 import com.mediaghor.fakelock.Permissions.PermissionUtils;
 import com.mediaghor.fakelock.R;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity{
     private static final int MAX_DENIALS_BEFORE_RATIONALE = 2;
     private static final String PERMISSION_PREFS = "PermissionPrefs";
     private static final String NOTIFICATION_DENIAL_COUNT_KEY = "notification_denial_count";
+    private FloatingIconManager floatingIconManager;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -59,8 +62,6 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setTheme(R.style.Theme_ScreenOff);
         setContentView(R.layout.activity_main);
-
-
 
         // Initialize views
         initializeViews();
@@ -102,6 +103,9 @@ public class MainActivity extends AppCompatActivity{
         layoutDisplayIcon = findViewById(R.id.layoutPermission1);
         fancySwitchForDisplayIcon = findViewById(R.id.fancySwitchForDisplayIcon);
         fancySwitchForPermissions = findViewById(R.id.fancySwitchForPermissions);
+        floatingIconManager = FloatingIconManager.getInstance(MainActivity.this);
+        fancySwitchForDisplayIcon.setChecked(true);
+
 
 
 
@@ -110,18 +114,25 @@ public class MainActivity extends AppCompatActivity{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     permissionHandler();
-
                     enableDisableADSB("enable");
-
                     // Perform action when turned ON
                 } else {
-
                     enableDisableADSB("disable");
-
-
                 }
             }
         });
+        fancySwitchForDisplayIcon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    floatingIconManager.startFloatingIcon();
+                    // Perform action when turned ON
+                } else {
+                    floatingIconManager.stopFloatingIcon();
+                }
+            }
+        });
+
 
 
 

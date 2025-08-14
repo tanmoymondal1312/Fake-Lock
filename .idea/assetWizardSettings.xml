@@ -319,8 +319,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="mobile_settings" />
-                            <entry key="sourceFile" value="E:\PROGRAMMING\resources\global_icons\mobile_settings.svg" />
+                            <entry key="outputName" value="lock_thin" />
+                            <entry key="sourceFile" value="E:\PROGRAMMING\resources\global_icons\lock_thin.svg" />
                           </map>
                         </option>
                       </PersistentState>

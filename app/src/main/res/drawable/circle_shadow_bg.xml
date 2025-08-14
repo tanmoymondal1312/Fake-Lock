@@ -1,0 +1,15 @@
+<!-- res/drawable/circle_shadow_bg.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#40000000"/>
+            <size android:width="56dp" android:height="56dp"/>
+        </shape>
+    </item>
+    <item android:top="2dp" android:left="2dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/floating_icon"/>
+            <size android:width="52dp" android:height="52dp"/>
+        </shape>
+    </item>
+</layer-list>
