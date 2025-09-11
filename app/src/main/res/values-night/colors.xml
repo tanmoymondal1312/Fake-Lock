@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="BlackAndWhite">#FFFFFF</color>
+    <color name="WhiteAndBlack">#000000</color>
+    <color name="LightWhiteAndBlack">#3F3E3E</color>
     <color name="statusBarColor">#333333</color>
     <color name="layoutBgColor">#030C13</color>
-    <color name="splash_bg">#272626</color>
+    <color name="splash_bg">#050505</color>
     <color name="permissionLay">#406A7E7E</color>
     <color name="layoutBorderColor">#A7CE87</color>
     <color name="switch_off">#6B6767</color>
@@ -16,7 +18,13 @@
     <color name="dialogBgColor">#000000</color>
     <color name="un_clickable_green">#606464</color>
     <color name="disable_layout_foreground">#805F5959</color>
-    <color name="floating_icon">#6AD2E7</color>
+    <color name="floating_icon">#666AD2E7</color>
+    <color name="battery_permission_dialog">#1EB587C7</color>
+
+    <color name="xiaomi_orange">#FF6700</color>
+    <color name="huawei_red">#C7000B</color>
+    <color name="oppo_green">#0C8C42</color>
+    <color name="vivo_blue">#0072BC</color>
 
 
 

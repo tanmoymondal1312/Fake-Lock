@@ -80,8 +80,8 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="E:\PROGRAMMING\resources\Apps\ScreenOff\Picsart_25-07-20_10-14-29-937.jpg" />
-                                                <entry key="scalingPercent" value="60" />
+                                                <entry key="imagePath" value="E:\PROGRAMMING\resources\Apps\ScreenOff\app_logo.png" />
+                                                <entry key="scalingPercent" value="77" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -308,7 +308,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$PROJECT_DIR$/../../../Android%20Studio/Sdk/icons/material/materialicons/miscellaneous_services/baseline_miscellaneous_services_24.xml" />
+                                      <entry key="url" value="file:/$PROJECT_DIR$/../../../Android%20Studio/Sdk/icons/material/materialicons/info_outline/baseline_info_outline_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -319,8 +319,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="lock_thin" />
-                            <entry key="sourceFile" value="E:\PROGRAMMING\resources\global_icons\lock_thin.svg" />
+                            <entry key="outputName" value="camera_fancy" />
+                            <entry key="sourceFile" value="E:\PROGRAMMING\resources\Apps\ScreenOff\camera_fancy.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -1,0 +1,5 @@
+<resources>
+    <item name="applyBtn" type="id"/>
+    <item name="checkedBtn" type="id"/>
+    <item name="frameLayoutContainer" type="id"/>
+</resources>

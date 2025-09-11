@@ -1,0 +1,75 @@
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/dialog_background"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Battery Optimization"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/WhiteAndBlack"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/phone_names"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xiaomi, Huawei, Honor, Oppo, Vivo"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:textColor="@color/WhiteAndBlack"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/dialog_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/battery_permission_description"
+            android:textSize="14sp"
+            android:textColor="@color/LightWhiteAndBlack"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="24dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Not now"
+                android:textColor="@color/LightWhiteAndBlack"
+                android:background="?attr/selectableItemBackground"
+                android:textAllCaps="false"
+                android:padding="8dp"/>
+
+            <Button
+                android:id="@+id/btn_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Whitelist Now"
+                android:textColor="#2196F3"
+                android:textStyle="bold"
+                android:background="?attr/selectableItemBackground"
+                android:textAllCaps="false"
+                android:padding="8dp"
+                android:layout_marginStart="16dp"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+
+
+
+

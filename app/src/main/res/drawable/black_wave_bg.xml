@@ -1,0 +1,22 @@
+<!-- res/drawable/black_wave_bg.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Base gradient (diagonal dark background) -->
+    <gradient
+        android:startColor="#000000"
+        android:centerColor="#111111"
+        android:endColor="#000000"
+        android:angle="135" />
+
+    <!-- Add stripes effect using a rotation -->
+    <size android:width="1080dp" android:height="1920dp" />
+
+    <corners android:radius="0dp" />
+
+    <!-- Optional overlay for wave-like effect -->
+    <stroke
+        android:width="120dp"
+        android:color="#1AFFFFFF" />  <!-- semi-transparent for soft stripes -->
+
+</shape>

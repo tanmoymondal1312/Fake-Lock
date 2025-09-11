@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 
 import com.mediaghor.fakelock.Activities.MainActivity;
 import com.mediaghor.fakelock.R;
@@ -21,6 +22,8 @@ public class PermissionDialog extends Dialog {
     private final Activity activity;
     private final PermissionDialogListener listener;
     Button allowNotificationBtn,allowDisplayBtn;
+
+
 
     public interface PermissionDialogListener {
         void onNotificationAllowed();

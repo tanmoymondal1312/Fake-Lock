@@ -29,24 +29,33 @@
             android:src="@drawable/lock_sample1"/>
 
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/applyButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Apply"
-            android:textColor="@android:color/white"
-            android:textAllCaps="true"
-            android:letterSpacing="0.1"
-            android:background="@drawable/bg_gradient_apply"
-            app:backgroundTint="@null"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:layout_marginTop="5dp"
-            android:layout_gravity="bottom|center_horizontal"/>
+        <FrameLayout
+            android:id="@+id/frameLayoutContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/applyButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="APPLY"
+                android:textColor="@android:color/white"
+                android:textAllCaps="true"
+                android:letterSpacing="0.1"
+                android:background="@drawable/bg_gradient_apply"
+                app:backgroundTint="@null"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="bottom|center_horizontal"/>
+
+        </FrameLayout>
+
+
+
 
 
 

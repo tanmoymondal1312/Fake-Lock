@@ -10,7 +10,7 @@
         android:id="@+id/floating_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/lock"
+        android:src="@drawable/floting_lock_icon"
         android:contentDescription="Floating icon"
         android:clickable="true"
         android:focusable="true"

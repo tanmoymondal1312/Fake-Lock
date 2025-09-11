@@ -10,15 +10,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0.5"
         android:orientation="vertical">
 
         <ImageView
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/_40sdp"
-            android:layout_width="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_80sdp"
+            android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_30sdp"
-            android:src="@drawable/lock"/>
+            android:tint="#C7C7C7"
+            android:src="@drawable/lock"
+            tools:ignore="UseAppTint" />
 
     </LinearLayout>
     <LinearLayout
@@ -63,6 +65,44 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical">
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="7" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8">
+            <ImageView
+                android:id="@+id/unlock_fl1"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:src="@drawable/lock_open"
+                android:tint="#FFFFFF"
+                tools:ignore="UseAppTint" />
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/emergency_call"
+                android:tint="#FFFFFF"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="20dp"
+                tools:ignore="UseAppTint" />
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/camera"
+                android:tint="#FFFFFF"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="20dp"
+                android:layout_marginRight="20dp"
+                tools:ignore="UseAppTint" />
+        </FrameLayout>
 
 
 

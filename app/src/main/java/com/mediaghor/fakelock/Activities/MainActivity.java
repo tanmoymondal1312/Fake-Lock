@@ -11,6 +11,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
+import android.os.MessageQueue;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -27,21 +29,30 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.kyleduo.switchbutton.SwitchButton;
+import com.mediaghor.fakelock.Dialog.BatteryOptimizationDialog;
+import com.mediaghor.fakelock.Dialog.FullScreenDialogBatteryOptInst;
 import com.mediaghor.fakelock.Dialog.OverlayPermissionHelper;
 import com.mediaghor.fakelock.Dialog.PermissionDialog;
+import com.mediaghor.fakelock.Helper.ManufacturerDetector;
+import com.mediaghor.fakelock.Helper.SaveMyLayout;
+import com.mediaghor.fakelock.Helper.SaveToggleState;
 import com.mediaghor.fakelock.OverlaySystem.FloatingIconManager;
 import com.mediaghor.fakelock.Permissions.NotificationPermissionManager;
 import com.mediaghor.fakelock.Permissions.PermissionUtils;
 import com.mediaghor.fakelock.R;
 import com.mediaghor.fakelock.adapter.SliderAdapter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -54,6 +65,9 @@ public class MainActivity extends AppCompatActivity{
     private static final String PERMISSION_PREFS = "PermissionPrefs";
     private static final String NOTIFICATION_DENIAL_COUNT_KEY = "notification_denial_count";
     private FloatingIconManager floatingIconManager;
+    private FullScreenDialogBatteryOptInst fullScreenDialogBatteryOptInst;
+    SliderAdapter adapter;
+
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -104,7 +118,8 @@ public class MainActivity extends AppCompatActivity{
         fancySwitchForDisplayIcon = findViewById(R.id.fancySwitchForDisplayIcon);
         fancySwitchForPermissions = findViewById(R.id.fancySwitchForPermissions);
         floatingIconManager = FloatingIconManager.getInstance(MainActivity.this);
-        fancySwitchForDisplayIcon.setChecked(true);
+        fullScreenDialogBatteryOptInst = new FullScreenDialogBatteryOptInst();
+
 
 
 
@@ -126,8 +141,25 @@ public class MainActivity extends AppCompatActivity{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     floatingIconManager.startFloatingIcon();
+                    SaveToggleState.saveToggleState(MainActivity.this,true);
+                    if (ManufacturerDetector.isProblematicManufacturer()){
+                        BatteryOptimizationDialog batteryOptimizationDialog = new BatteryOptimizationDialog(MainActivity.this, new BatteryOptimizationDialog.DialogButtonClickListener() {
+                            @Override
+                            public void onOkClicked() {
+                                fullScreenDialogBatteryOptInst.show(getSupportFragmentManager(), "FullScreenDialog");
+                            }
+
+                            @Override
+                            public void onCancelClicked() {
+
+                            }
+                        });
+                        batteryOptimizationDialog.show();
+                    }
+
                     // Perform action when turned ON
                 } else {
+                    SaveToggleState.saveToggleState(MainActivity.this,false);
                     floatingIconManager.stopFloatingIcon();
                 }
             }
@@ -171,14 +203,41 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-    private void setupLayoutSelectorViewpager(){
-        viewPager2 = findViewById(R.id.viewPager);
+    private void displayToggleOnOff(){
+        if(SaveToggleState.getToggleState(MainActivity.this) == false){
+            fancySwitchForDisplayIcon.setChecked(false);
+        }else {
+            fancySwitchForDisplayIcon.setChecked(true);
+        }
+    }
 
+
+    private void setupLayoutSelectorViewpager() {
+        // Use IdleHandler to defer execution until UI thread is idle
+        Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
+            @Override
+            public boolean queueIdle() {
+                // This will run after the activity is fully loaded and UI thread is idle
+                displayToggleOnOff();
+                executeViewPagerSetup();
+
+                return false; // Remove handler after execution
+            }
+        });
+    }
+
+
+    private void executeViewPagerSetup() {
+        if (SaveMyLayout.getSavedLayoutId(MainActivity.this) == -1) {
+            SaveMyLayout.saveSelectedLayoutId(MainActivity.this, R.layout.activity_fake_lock);
+        }
+
+        viewPager2 = findViewById(R.id.viewPager);
         // Calculate dimensions for showing 3 items (1 full + 2 partial)
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int screenWidth = displayMetrics.widthPixels;
-        int itemWidth = (int) (screenWidth * 0.60f); // Each item takes 75% of screen width
+        int itemWidth = (int) (screenWidth * 0.60f); // Each item takes 60% of screen width
         int peekWidth = (screenWidth - itemWidth) / 2; // Space for partial items
 
         // Set padding to show partial items on both sides
@@ -187,15 +246,16 @@ public class MainActivity extends AppCompatActivity{
         viewPager2.setClipChildren(false);
         viewPager2.setOffscreenPageLimit(2); // Keep 2 pages in memory on each side
 
-        List<Integer> imageList = Arrays.asList(
-                R.drawable.lock_sample1,
-                R.drawable.lock_sample1,
-                R.drawable.lock_sample1,
-                R.drawable.lock_sample1
-        );
+        List<int[]> imageList = new ArrayList<>();
+        imageList.add(new int[]{R.drawable.lock_sample1, R.layout.activity_fake_lock});
+        imageList.add(new int[]{R.drawable.lock_sample2, R.layout.lock_screen2});
+        imageList.add(new int[]{R.drawable.lock_sample3, R.layout.lock_screen3});
+        imageList.add(new int[]{R.drawable.lock_sample4, R.layout.lock_screen4});
 
-        SliderAdapter adapter = new SliderAdapter(imageList);
+        adapter = new SliderAdapter(imageList, MainActivity.this);
         viewPager2.setAdapter(adapter);
+
+
 
         // Create composite transformer for combined effects
         CompositePageTransformer compositeTransformer = new CompositePageTransformer();
@@ -210,16 +270,13 @@ public class MainActivity extends AppCompatActivity{
                     page.setAlpha(0f);
                     return;
                 }
-
                 // Scale effect
                 float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position) / 2);
                 page.setScaleX(scaleFactor);
                 page.setScaleY(scaleFactor);
-
                 // Alpha effect
                 float alphaFactor = Math.max(MIN_ALPHA, 1 - Math.abs(position));
                 page.setAlpha(alphaFactor);
-
                 // Translation effect to bring items closer
                 page.setTranslationX(-position * peekWidth / 2);
             }
@@ -227,7 +284,35 @@ public class MainActivity extends AppCompatActivity{
 
         viewPager2.setPageTransformer(compositeTransformer);
 
+        // Optional: Add smooth fade-in animation for better user experience
+        viewPager2.setAlpha(0f);
+        viewPager2.animate()
+                .alpha(1f)
+                .setDuration(300)
+                .setStartDelay(100)
+                .start();
+
+
+        Log.d("ItemPosition","Hi We Are In Adapter Func");
+
+
+        viewPager2.post(() -> {
+            int selectedPos = adapter.getPositionUsingId(SaveMyLayout.getSavedLayoutId(this));
+            int nextPos = selectedPos + 1;
+
+            // Clamp to valid range
+            if (nextPos >= adapter.getItemCount()) {
+                nextPos = adapter.getItemCount() - 1;
+            }
+
+            final int targetPos = nextPos; // final for lambda
+            viewPager2.post(() -> viewPager2.setCurrentItem(targetPos, true));
+        });
+
     }
+
+
+
 
 
 
@@ -410,7 +495,6 @@ public class MainActivity extends AppCompatActivity{
     public boolean handleToggle(){
         if (permissionChecker("notification") && permissionChecker("display_over")) {
             fancySwitchForPermissions.setChecked(true);
-
             return true;
         }else {
             fancySwitchForPermissions.setChecked(false);
@@ -463,8 +547,10 @@ public class MainActivity extends AppCompatActivity{
         if(requestCode == 1002){
             runOnUiThread(() -> {
                 LogMessage("dialog debug","Request Code 100");
+                if(handleToggle()){
+                    updateUIForGrantedPermission("display_allowed");
+                }
 
-                updateUIForGrantedPermission("display_allowed");
 
                 if(dialog== null){
                     LogMessage("dialog debug","Dialog Null");

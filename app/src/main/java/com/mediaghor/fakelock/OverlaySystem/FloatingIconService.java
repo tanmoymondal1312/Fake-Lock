@@ -9,8 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,24 +24,21 @@ import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
-import android.widget.TextView;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
+
+import com.mediaghor.fakelock.Helper.SaveMyLayout;
 import com.mediaghor.fakelock.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.function.IntConsumer;
 
 public class FloatingIconService extends Service {
     private WindowManager windowManager;
     private View floatingIconView;
-    private View fullScreenOverlayView;
+    private View lockOverlayView;
     private WindowManager.LayoutParams floatingParams;
-    private WindowManager.LayoutParams overlayParams;
+    private WindowManager.LayoutParams lockOverlayParams;
     private ImageView imgMainIcon;
-    private ImageView imgLockIcon,lock1cameraicon;
 
     // Animation variables
     private SpringAnimation xAnimation;
@@ -49,6 +50,7 @@ public class FloatingIconService extends Service {
     private GestureDetector gestureDetector;
     private boolean isDragging = false;
     private int touchSlop;
+    private Handler uiHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -65,14 +67,17 @@ public class FloatingIconService extends Service {
         touchSlop = ViewConfiguration.get(this).getScaledTouchSlop();
         setupGestureDetector();
         createFloatingIcon();
-        prepareFullScreenOverlay();
+
     }
 
     private void setupGestureDetector() {
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
-                showFullScreenOverlay();
+                prepareLockOverlay();
+                showLockOverlay();
+
+
                 return true;
             }
 
@@ -115,84 +120,100 @@ public class FloatingIconService extends Service {
         }
     }
 
-    private void prepareFullScreenOverlay() {
+    private void prepareLockOverlay() {
         LayoutInflater inflater = LayoutInflater.from(this);
-        fullScreenOverlayView = inflater.inflate(R.layout.lock_screen1, null);
+        int savedId = SaveMyLayout.getSavedLayoutId(this);
+        if (savedId!=-1){
+            lockOverlayView = inflater.inflate(savedId, null);
+        }else {
+            lockOverlayView = inflater.inflate(R.layout.activity_fake_lock, null);
+            SaveMyLayout.saveSelectedLayoutId(this,R.layout.activity_fake_lock);
 
-        overlayParams = new WindowManager.LayoutParams(
+        }
+
+
+        int layoutType = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ?
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY :
+                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+
+        lockOverlayParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ?
-                        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY :
-                        WindowManager.LayoutParams.TYPE_PHONE,
+                layoutType,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                         WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN |
                         WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT);
 
-        // Initialize views and set current time/date
-        TextView timeText = fullScreenOverlayView.findViewById(R.id.timeText);
-        TextView dateText = fullScreenOverlayView.findViewById(R.id.dateText);
-        imgLockIcon = fullScreenOverlayView.findViewById(R.id.unlock_fl1);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            lockOverlayParams.layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        }
 
-        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
-        String currentTime = timeFormat.format(new Date());
-        String currentDate = dateFormat.format(new Date());
+        lockOverlayParams.gravity = Gravity.TOP | Gravity.START;
 
-        timeText.setText(currentTime);
-        dateText.setText(currentDate);
+        ImageView unlockBtn = lockOverlayView.findViewById(R.id.unlock_fl1);
+        unlockBtn.setOnClickListener(v -> removeLockOverlay());
 
-        // Set click listener for the lock icon
-        imgLockIcon.setOnClickListener(v -> {
-            v.setEnabled(false); // Prevent multiple clicks
-            hideFullScreenOverlay();
-            v.postDelayed(() -> v.setEnabled(true), 500); // Re-enable after animation
+        // System UI visibility control
+        lockOverlayView.setOnSystemUiVisibilityChangeListener(visibility -> {
+            if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                hideSystemUI();
+            }
         });
     }
 
-     private void showFullScreenOverlay() {
-        if (fullScreenOverlayView.getParent() != null || floatingIconView.getVisibility() != View.VISIBLE) {
-            return;
-        }
+    private void showLockOverlay() {
+        if (lockOverlayView.getParent() != null) return;
 
-        // Reset any ongoing animations
-        floatingIconView.animate().cancel();
-        fullScreenOverlayView.animate().cancel();
-
-        // Animate the floating icon out
         animateFloatingIconOut(() -> {
             try {
-                if (fullScreenOverlayView.getParent() == null) {
-                    windowManager.addView(fullScreenOverlayView, overlayParams);
-                    animateOverlayIn();
-                }
+                windowManager.addView(lockOverlayView, lockOverlayParams);
+                hideSystemUI();
+
+                // Periodic check to ensure system UI stays hidden
+                uiHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (lockOverlayView != null && lockOverlayView.isAttachedToWindow()) {
+                            hideSystemUI();
+                            uiHandler.postDelayed(this, 1000);
+                        }
+                    }
+                }, 1000);
             } catch (Exception e) {
                 e.printStackTrace();
+                animateFloatingIconIn();
             }
         });
     }
 
-
-    private void hideFullScreenOverlay() {
-        if (fullScreenOverlayView.getParent() == null) {
-            return;
+    private void hideSystemUI() {
+        if (lockOverlayView != null) {
+            lockOverlayView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_LOW_PROFILE
+            );
         }
+    }
 
-        // Reset any ongoing animations
-        fullScreenOverlayView.animate().cancel();
-        floatingIconView.animate().cancel();
-
-        animateOverlayOut(() -> {
-            try {
-                if (fullScreenOverlayView.getParent() != null) {
-                    windowManager.removeView(fullScreenOverlayView);
-                    animateFloatingIconIn();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+    private void removeLockOverlay() {
+        if (lockOverlayView != null && lockOverlayView.isAttachedToWindow()) {
+            windowManager.removeView(lockOverlayView);
+            animateFloatingIconIn();
+        }
     }
 
     private void animateFloatingIconOut(Runnable onComplete) {
@@ -208,7 +229,7 @@ public class FloatingIconService extends Service {
                         if (onComplete != null) {
                             onComplete.run();
                         }
-                        floatingIconView.animate().setListener(null); // Clear listener
+                        floatingIconView.animate().setListener(null);
                     }
                 })
                 .start();
@@ -225,45 +246,11 @@ public class FloatingIconService extends Service {
                 .scaleY(1f)
                 .alpha(1f)
                 .setDuration(200)
-                .setListener(null) // Clear any previous listeners
-                .start();
-    }
-
-    private void animateOverlayIn() {
-        fullScreenOverlayView.setAlpha(0f);
-        fullScreenOverlayView.setScaleX(0.9f);
-        fullScreenOverlayView.setScaleY(0.9f);
-        fullScreenOverlayView.setVisibility(View.VISIBLE);
-
-        fullScreenOverlayView.animate()
-                .alpha(1f)
-                .scaleX(1f)
-                .scaleY(1f)
-                .setDuration(300)
-                .setListener(null) // Clear any previous listeners
-                .start();
-    }
-
-    private void animateOverlayOut(Runnable onComplete) {
-        fullScreenOverlayView.animate()
-                .alpha(0f)
-                .scaleX(0.9f)
-                .scaleY(0.9f)
-                .setDuration(300)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (onComplete != null) {
-                            onComplete.run();
-                        }
-                        fullScreenOverlayView.animate().setListener(null); // Clear listener
-                    }
-                })
+                .setListener(null)
                 .start();
     }
 
     private void initializeSpringAnimations() {
-        // For X axis
         SpringForce springForceX = new SpringForce(0)
                 .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY)
                 .setStiffness(SpringForce.STIFFNESS_MEDIUM);
@@ -271,7 +258,6 @@ public class FloatingIconService extends Service {
         xAnimation = new SpringAnimation(floatingIconView, SpringAnimation.TRANSLATION_X)
                 .setSpring(springForceX);
 
-        // For Y axis
         SpringForce springForceY = new SpringForce(0)
                 .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY)
                 .setStiffness(SpringForce.STIFFNESS_MEDIUM);
@@ -313,7 +299,6 @@ public class FloatingIconService extends Service {
         initialY = floatingParams.y;
         isDragging = false;
 
-        // Visual feedback
         imgMainIcon.animate()
                 .scaleX(0.9f)
                 .scaleY(0.9f)
@@ -393,29 +378,31 @@ public class FloatingIconService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (floatingIconView != null && windowManager != null) {
-            try {
-                windowManager.removeView(floatingIconView);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        uiHandler.removeCallbacksAndMessages(null);
 
-        if (fullScreenOverlayView != null && windowManager != null) {
-            try {
-                windowManager.removeView(fullScreenOverlayView);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (floatingIconView != null && floatingIconView.isAttachedToWindow()) {
+            windowManager.removeView(floatingIconView);
+        }
+        if (lockOverlayView != null && lockOverlayView.isAttachedToWindow()) {
+            windowManager.removeView(lockOverlayView);
         }
     }
 
+    public static boolean hasOverlayPermission(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return Settings.canDrawOverlays(context);
+        }
+        return true;
+    }
+
     public static void startService(Context context) {
-        Intent intent = new Intent(context, FloatingIconService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else {
-            context.startService(intent);
+        if (hasOverlayPermission(context)) {
+            Intent intent = new Intent(context, FloatingIconService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent);
+            } else {
+                context.startService(intent);
+            }
         }
     }
 

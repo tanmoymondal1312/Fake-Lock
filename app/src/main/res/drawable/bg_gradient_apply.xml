@@ -10,7 +10,7 @@
                         android:angle="0"
                         android:startColor="#4C66C2"
                         android:centerColor="#48D1CC"
-                        android:endColor="#9370DB"
+                        android:endColor="#5F3CA5"
                         android:type="linear" />
                     <corners android:radius="17dp" />
                 </shape>
