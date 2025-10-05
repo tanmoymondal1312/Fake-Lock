@@ -21,10 +21,10 @@
     <color name="floating_icon">#666A7EE7</color>
     <color name="battery_permission_dialog">#1EB587C7</color>
 
-        <color name="xiaomi_orange">#FF6700</color>
-        <color name="huawei_red">#C7000B</color>
-        <color name="oppo_green">#0C8C42</color>
-        <color name="vivo_blue">#0072BC</color>
+    <color name="xiaomi_orange">#FF6700</color>
+    <color name="huawei_red">#C7000B</color>
+    <color name="oppo_green">#0C8C42</color>
+    <color name="vivo_blue">#0072BC</color>
 
 
 

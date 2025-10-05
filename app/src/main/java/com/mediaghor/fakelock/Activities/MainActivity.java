@@ -3,9 +3,12 @@ package com.mediaghor.fakelock.Activities;
 import static java.security.AccessController.getContext;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -18,9 +21,14 @@ import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -28,6 +36,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
@@ -35,6 +45,7 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.kyleduo.switchbutton.SwitchButton;
+import com.mediaghor.fakelock.Dialog.ApSettingsDialog;
 import com.mediaghor.fakelock.Dialog.BatteryOptimizationDialog;
 import com.mediaghor.fakelock.Dialog.FullScreenDialogBatteryOptInst;
 import com.mediaghor.fakelock.Dialog.OverlayPermissionHelper;
@@ -57,6 +68,7 @@ import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity{
 
     LinearLayout layoutDisplayIcon,layoutPermission;
+    AppCompatImageView settings;
     private SwitchButton fancySwitchForDisplayIcon, fancySwitchForPermissions;
     ViewPager2 viewPager2;
     private PermissionDialog dialog;
@@ -67,6 +79,7 @@ public class MainActivity extends AppCompatActivity{
     private FloatingIconManager floatingIconManager;
     private FullScreenDialogBatteryOptInst fullScreenDialogBatteryOptInst;
     SliderAdapter adapter;
+    ApSettingsDialog apSettingsDialog;
 
 
 
@@ -117,8 +130,54 @@ public class MainActivity extends AppCompatActivity{
         layoutDisplayIcon = findViewById(R.id.layoutPermission1);
         fancySwitchForDisplayIcon = findViewById(R.id.fancySwitchForDisplayIcon);
         fancySwitchForPermissions = findViewById(R.id.fancySwitchForPermissions);
+        settings = findViewById(R.id.btn_settings);
         floatingIconManager = FloatingIconManager.getInstance(MainActivity.this);
         fullScreenDialogBatteryOptInst = new FullScreenDialogBatteryOptInst();
+
+
+
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // To show the dialog
+                apSettingsDialog = new ApSettingsDialog(MainActivity.this,
+                        new ApSettingsDialog.OnThemeSwitchListener() {
+                            @Override
+                            public void onThemeSwitched(boolean isNight) {
+                                if (isNight) {
+                                    AppCompatDelegate.setDefaultNightMode(
+                                            AppCompatDelegate.MODE_NIGHT_YES);
+
+                                } else {
+                                    AppCompatDelegate.setDefaultNightMode(
+                                            AppCompatDelegate.MODE_NIGHT_NO);
+                                }
+
+                                // recreate and re-open dialog
+                                apSettingsDialog.dismiss();
+                                apSettingsDialog = new ApSettingsDialog(MainActivity.this, this);
+                                apSettingsDialog.show();
+                            }
+                        });
+                
+
+                apSettingsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        rotateSettingsIcon(true); // rotation animation on dismiss
+                    }
+                });
+
+                apSettingsDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        rotateSettingsIcon(false); // rotation animation on show
+                    }
+                });
+
+                apSettingsDialog.show();
+            }
+        });
 
 
 
@@ -201,6 +260,33 @@ public class MainActivity extends AppCompatActivity{
 
 
     }
+
+    public void rotateSettingsIcon(boolean rotateRight) {
+        // Get the current rotation
+        float currentRotation = settings.getRotation();
+
+        // Determine the target rotation
+        float targetRotation;
+        if (rotateRight) {
+            targetRotation = currentRotation + 90f; // Rotate 90 degrees clockwise
+        } else {
+            targetRotation = currentRotation - 90f; // Rotate 90 degrees counterclockwise
+        }
+
+        // Animate the rotation
+        settings.animate()
+                .rotation(targetRotation)
+                .setDuration(300) // Animation duration in milliseconds
+                .start();
+    }
+
+
+
+
+
+
+
+
 
 
     private void displayToggleOnOff(){

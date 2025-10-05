@@ -34,10 +34,16 @@
         android:id="@+id/layoutPermission1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0.8"
         android:background="@drawable/layout_rounded_background"
         android:foreground="?attr/selectableItemBackground"
         android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:src="@drawable/eye"/>
 
         <TextView
             android:layout_width="0dp"
@@ -45,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textSize="@dimen/_15ssp"
+            android:textSize="@dimen/_12ssp"
             android:textStyle="bold"
             android:text="@string/apply_display"
             android:textColor="@color/text_approve_allow_layout"
@@ -84,11 +90,16 @@
         android:id="@+id/layoutPermission2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0.8"
         android:clickable="true"
         android:background="@drawable/layout_rounded_background"
         android:foreground="?attr/selectableItemBackground"
         android:orientation="horizontal">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:src="@drawable/settingscolorfull"/>
 
         <TextView
             android:layout_width="0dp"
@@ -96,7 +107,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textSize="@dimen/_15ssp"
+            android:textSize="@dimen/_12ssp"
             android:textStyle="bold"
             android:text="@string/allowDOOA"
             android:textColor="@color/text_approve_allow_layout"
