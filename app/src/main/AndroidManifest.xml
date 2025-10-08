@@ -2,15 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        package="com.mediaghor.fakelock"
+        android:name=".MyApp"
+        package="com.mediaghor.darkscreen"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,22 +20,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme_ScreenOff"
         tools:targetApi="31">
-
-
+        <activity
+            android:name=".Activities.ThemeSettingsActivity"
+            android:exported="false" />
 
         <service
             android:name=".OverlaySystem.FloatingIconService"
             android:enabled="true"
-            android:foregroundServiceType="specialUse"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
 
         <receiver
             android:name=".OverlaySystem.RestartServiceReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT"/>
-                <action android:name="com.mediaghor.fakelock.RESTART_SERVICE"/>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="com.mediaghor.fakelock.RESTART_SERVICE" />
             </intent-filter>
         </receiver>
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fake Lock</string>
+    <string name="app_name">Dark Screen</string>
     <string name="desc_settings">Open Settings</string>
     <string name="perm_inst_1">One the toggle and enjoy a demo lock screen vibes!</string>
     <string name="perm_inst_2">Go to settings and allow necessary settings otherwise can not enjoy the feature.</string>

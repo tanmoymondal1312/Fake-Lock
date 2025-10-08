@@ -319,8 +319,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="camera_fancy" />
-                            <entry key="sourceFile" value="E:\PROGRAMMING\resources\Apps\ScreenOff\camera_fancy.svg" />
+                            <entry key="outputName" value="back" />
+                            <entry key="sourceFile" value="E:\PROGRAMMING\resources\global_icons\back.svg" />
                           </map>
                         </option>
                       </PersistentState>

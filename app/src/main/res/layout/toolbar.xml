@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,21 +10,40 @@
     android:elevation="4dp"
     android:translationZ="4dp"
     android:clipToOutline="false"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
     android:outlineProvider="bounds">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/back_from_toolbar"
+        android:layout_width="@dimen/_32sdp"
+        android:layout_height="match_parent"
+        android:src="@drawable/back"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:tint="@color/BlackAndWhite"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="3dp"
+        android:layout_marginStart="15dp"
+        android:contentDescription="Back To The Previous Page" />
+
+
 
     <TextView
         android:id="@+id/toolbar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginTop="@dimen/_3sdp"
         android:text="@string/app_name"
         android:textSize="@dimen/_15sdp"
         android:textColor="@color/BlackAndWhite"
         android:textStyle="bold"
-        android:contentDescription="@string/app_name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:contentDescription="@string/app_name"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/btn_settings"
@@ -37,8 +56,6 @@
         android:focusable="true"
         android:contentDescription="@string/desc_settings"
         android:tooltipText="@string/desc_settings"
-        android:src="@drawable/settings"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:src="@drawable/settings" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

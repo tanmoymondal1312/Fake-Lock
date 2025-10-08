@@ -3,6 +3,8 @@
     <color name="BlackAndWhite">#000000</color>
     <color name="WhiteAndBlack">#FFFFFF</color>
     <color name="LightWhiteAndBlack">#C2C1C1</color>
+    <color name="LightBlackAndWhite">#3F3E3E</color>
+
     <color name="statusBarColor">#FFFFFF</color>
     <color name="layoutBgColor">#ECEDEE</color>
     <color name="splash_bg">#FFFEFE</color>

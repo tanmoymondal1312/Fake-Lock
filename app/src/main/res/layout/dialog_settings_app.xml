@@ -47,13 +47,16 @@
             android:gravity="end">
 
             <LinearLayout
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:id="@+id/id_theme_change"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:orientation="horizontal"
-                android:layout_weight="1">
+                android:orientation="horizontal">
                 <TextView
                     android:textStyle="bold"
                     android:layout_width="0dp"
@@ -62,12 +65,23 @@
                     android:text="Theme"
                     android:textSize="@dimen/_15ssp"
                     android:textColor="@color/WhiteAndBlack"/>
-                <com.vimalcvs.switchdn.DayNightSwitch
-                    android:id="@+id/dayNightSwitchBtn"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_weight="0.2"/>
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dark/Night &amp; Fancy"
+                    android:textColor="@color/LightWhiteAndBlack"/>
+
             </LinearLayout>
+
+            <View
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/WhiteAndBlack"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginRight="@dimen/_5sdp"/>
 
 
 

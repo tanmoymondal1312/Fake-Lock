@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.mediaghor.fakelock'
+    namespace 'com.mediaghor.darkscreen'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.mediaghor.fakelock"
+        applicationId "com.mediaghor.darkscreen"
         minSdk 26
         targetSdk 35
         versionCode 1
@@ -37,6 +37,8 @@ android {
 }
 
 dependencies {
+
+
 
     implementation 'com.github.vimalcvs:Day-Night-Switch:1.0.3'
 
